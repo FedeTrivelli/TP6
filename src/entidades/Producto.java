@@ -1,15 +1,18 @@
 package entidades;
 
 public class Producto {
+
     private String nombre;
-    private String precio;
+    private double precio;
+    private Categoria categoria;
 
     public Producto() {
     }
 
-    public Producto(String nombre, String precio) {
+    public Producto(String nombre, double precio, Categoria categoria) {
         this.nombre = nombre;
         this.precio = precio;
+        this.categoria = categoria;
     }
 
     public String getNombre() {
@@ -20,16 +23,24 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public String getPrecio() {
+    public double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(String precio) {
+    public void setPrecio(double precio) {
         this.precio = precio;
     }
-    
-    public String toString(){
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public String toString() {
         return nombre + precio;
     }
-    
+
 }

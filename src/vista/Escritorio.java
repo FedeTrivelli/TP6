@@ -1,17 +1,27 @@
 package vista;
 
+import data.CategoriaData;
+import data.ProductoData;
+import entidades.Categoria;
+import entidades.Producto;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
-
 /**
  *
  * @author FEDE-PC
  */
 public class Escritorio extends javax.swing.JFrame {
-    
+
+    private CategoriaData cd;
+    private ProductoData pd;
+    private DefaultTableModel modelo;
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Escritorio.class.getName());
 
     /**
@@ -19,6 +29,11 @@ public class Escritorio extends javax.swing.JFrame {
      */
     public Escritorio() {
         initComponents();
+        cd = new CategoriaData();
+        pd = new ProductoData();
+        llenarCmb();
+        modelo = new DefaultTableModel();
+        armarCabezera();
     }
 
     /**
@@ -48,11 +63,24 @@ public class Escritorio extends javax.swing.JFrame {
 
         lblNombre.setText("Nombre");
 
-        lblPrecio.setText("Precio (S)");
+        lblPrecio.setText("Precio ($)");
 
-        cmbCategoria.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbCategoria.addActionListener(this::cmbCategoriaActionPerformed);
 
-        btnAgregar.setText("jButton9");
+        txtNombre.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtNombreFocusLost(evt);
+            }
+        });
+
+        txtPrecio.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtPrecioFocusLost(evt);
+            }
+        });
+
+        btnAgregar.setText("Agregar");
+        btnAgregar.addActionListener(this::btnAgregarActionPerformed);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -128,9 +156,9 @@ public class Escritorio extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(88, 88, 88)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(8, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -144,6 +172,49 @@ public class Escritorio extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void txtNombreFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtNombreFocusLost
+        // TODO add your handling code here:
+        if (txtNombre.getText().length() == 0) {
+            JOptionPane.showMessageDialog(this, "Debe tener un nombre");
+            txtNombre.requestFocus();
+        }
+    }//GEN-LAST:event_txtNombreFocusLost
+
+    private void txtPrecioFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtPrecioFocusLost
+        // TODO add your handling code here:
+        try {
+            String precio = txtPrecio.getText();
+            double pre = Double.parseDouble(precio);
+        } catch (NumberFormatException x) {
+            JOptionPane.showMessageDialog(this, "Debe ingresar un precio valido");
+            txtPrecio.requestFocus();
+        }
+    }//GEN-LAST:event_txtPrecioFocusLost
+
+    private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
+        // TODO add your handling code here:
+        if (txtNombre.getText().trim().isEmpty() || txtPrecio.getText().trim().isEmpty() || cmbCategoria.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(this, "Tines que llenar todos los campos");
+            return;
+        }
+
+        Producto pn = new Producto();
+
+        pn.setNombre(txtNombre.getText());
+        pn.setPrecio(Double.parseDouble(txtPrecio.getText()));
+        pn.setCategoria((Categoria) cmbCategoria.getSelectedItem());
+
+        pd.guardarProducto(pn);
+        limpiarCampos();
+        modelo.setRowCount(0);
+        llenarTabla();
+
+    }//GEN-LAST:event_btnAgregarActionPerformed
+
+    private void cmbCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbCategoriaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbCategoriaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -172,7 +243,7 @@ public class Escritorio extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
-    private javax.swing.JComboBox<String> cmbCategoria;
+    private javax.swing.JComboBox<Categoria> cmbCategoria;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
@@ -183,4 +254,30 @@ public class Escritorio extends javax.swing.JFrame {
     private javax.swing.JTextField txtNombre;
     private javax.swing.JTextField txtPrecio;
     // End of variables declaration//GEN-END:variables
+    private void llenarCmb() {
+        for (Categoria c : cd.obtenerCategoria()) {
+            cmbCategoria.addItem(c);
+            cmbCategoria.setSelectedIndex(-1);
+        }
+    }
+
+    private void limpiarCampos() {
+        txtNombre.setText("");
+        txtPrecio.setText("");
+        cmbCategoria.setSelectedIndex(-1);
+    }
+
+    private void armarCabezera() {
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Categoria");
+        modelo.addColumn("Precio");
+        jTable1.setModel(modelo);
+    }
+
+    private void llenarTabla() {
+        for (Producto p : pd.obtenerProductos()) {
+            modelo.addRow(new Object[]{p.getNombre(), p.getCategoria(), p.getPrecio()});
+
+        }
+    }
 }

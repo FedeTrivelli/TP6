@@ -1,6 +1,7 @@
 package entidades;
 
 public class Categoria {
+
     private String nombreCategoria;
 
     public Categoria() {
@@ -17,8 +18,8 @@ public class Categoria {
     public void setNombreCategoria(String nombreCategoria) {
         this.nombreCategoria = nombreCategoria;
     }
-    
-    public String toSting(){
+
+    public String toString() {
         return nombreCategoria;
     }
 }
